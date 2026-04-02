@@ -34,22 +34,31 @@ class BookController extends Controller
         return view('books.create', compact('categories'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'category_id' => 'required|numeric',
-            'judul' => 'required',
-            'penulis' => 'required',
-            'tahun_terbit' => 'required|numeric',
-            'stok' => 'required|numeric'
-        ]);
+  public function store(Request $request)
+{
+    $request->validate([
+        'category_id'  => 'required|numeric',
+        'judul'        => 'required',
+        'penulis'      => 'required',
+        'tahun_terbit' => 'required|numeric',
+        'stok'         => 'required|numeric',
+        'gambar'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+    ]);
 
-        Book::create($request->all());
+    $data = $request->all();
 
-        return redirect()->route('books.index')
-                ->with('success','Data berhasil ditambahkan');
+    if ($request->hasFile('gambar')) {
+        $gambar = $request->file('gambar');
+        $namaGambar = time() . '.' . $gambar->getClientOriginalExtension();
+        $gambar->move(public_path('images'), $namaGambar);
+        $data['gambar'] = $namaGambar;
     }
 
+    Book::create($data);
+
+    return redirect()->route('books.index')
+            ->with('success', 'Data berhasil ditambahkan');
+}
     public function edit(Book $book)
     {
         $categories = Category::all();
@@ -57,21 +66,36 @@ class BookController extends Controller
     }
 
     public function update(Request $request, Book $book)
-    {
-        $request->validate([
-            'category_id' => 'required|numeric',
-            'judul' => 'required',
-            'penulis' => 'required',
-            'tahun_terbit' => 'required|numeric',
-            'stok' => 'required|numeric'
-        ]);
+{
+    $request->validate([
+        'category_id'  => 'required|numeric',
+        'judul'        => 'required',
+        'penulis'      => 'required',
+        'tahun_terbit' => 'required|numeric',
+        'stok'         => 'required|numeric',
+        'gambar'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+    ]);
 
-        $book->update($request->all());
+    $data = $request->all();
 
-        return redirect()->route('books.index')
-                ->with('success','Data berhasil diupdate');
+    if ($request->hasFile('gambar')) {
+        // Hapus gambar lama kalau ada
+        if ($book->gambar && file_exists(public_path('images/' . $book->gambar))) {
+            unlink(public_path('images/' . $book->gambar));
+        }
+        $gambar = $request->file('gambar');
+        $namaGambar = time() . '.' . $gambar->getClientOriginalExtension();
+        $gambar->move(public_path('images'), $namaGambar);
+        $data['gambar'] = $namaGambar;
+    } else {
+        unset($data['gambar']);
     }
 
+    $book->update($data);
+
+    return redirect()->route('books.index')
+            ->with('success', 'Data berhasil diupdate');
+}
     public function destroy(Book $book)
     {
         $book->delete();

@@ -14,24 +14,10 @@
 @endif
 
 {{-- Informasi Jumlah Data --}}
-<div class="row mb-3">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <h6>Total Semua Buku</h6>
-                <h3>{{ $totalBooks }}</h3>
-            </div>
-        </div>
-    </div>
+<div class="alert alert-info">
+    <strong>Total Data Book: {{ $totalBooks }}</strong> | Per Kategori:
     @foreach($booksPerCategory as $cat)
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <h6>{{ $cat->nama_kategori }}</h6>
-                <h3>{{ $cat->books_count }}</h3>
-            </div>
-        </div>
-    </div>
+        <span class="badge bg-dark">{{ $cat->nama_kategori }}: {{ $cat->books_count }}</span>
     @endforeach
 </div>
 
@@ -39,15 +25,15 @@
 <form method="GET" action="{{ route('books.index') }}" class="mb-3">
     <div class="row g-2">
         <div class="col-md-5">
-            <input type="text" name="judul" class="form-control" 
-                   placeholder="Cari judul buku..." 
+            <input type="text" name="judul" class="form-control"
+                   placeholder="Cari judul buku..."
                    value="{{ request('judul') }}">
         </div>
         <div class="col-md-4">
             <select name="category_id" class="form-select">
                 <option value="">-- Semua Kategori --</option>
                 @foreach($categories as $category)
-                    <option value="{{ $category->id }}" 
+                    <option value="{{ $category->id }}"
                         {{ request('category_id') == $category->id ? 'selected' : '' }}>
                         {{ $category->nama_kategori }}
                     </option>
@@ -55,7 +41,7 @@
             </select>
         </div>
         <div class="col-md-3">
-            <button class="btn btn-success w-100">Cari</button>
+            <button class="btn btn-success w-100">Cari & Filter</button>
         </div>
     </div>
 </form>
@@ -70,6 +56,7 @@
                     <th>Penulis</th>
                     <th>Tahun</th>
                     <th>Stok</th>
+                    <th>Cover</th>
                     <th width="150">Aksi</th>
                 </tr>
             </thead>
@@ -84,10 +71,18 @@
                         <span class="badge bg-info">{{ $book->stok }}</span>
                     </td>
                     <td>
-                        <a href="{{ route('books.edit',$book->id) }}" 
+                        @if($book->gambar)
+                            <img src="{{ asset('images/' . $book->gambar) }}"
+                                 width="60" class="img-thumbnail">
+                        @else
+                            <span class="badge bg-secondary">Tidak ada gambar</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('books.edit',$book->id) }}"
                            class="btn btn-warning btn-sm">Edit</a>
 
-                        <form action="{{ route('books.destroy',$book->id) }}" 
+                        <form action="{{ route('books.destroy',$book->id) }}"
                               method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')

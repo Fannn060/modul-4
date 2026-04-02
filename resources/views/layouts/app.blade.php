@@ -10,12 +10,14 @@
 
 <nav class="navbar navbar-expand navbar-dark bg-dark">
     <div class="container">
-        <span class="navbar-brand">Perpustakaan</span>
+        <span class="navbar-brand">CRUD Laravel</span>
         <div class="navbar-nav">
-            <a class="nav-link {{ request()->is('books*') ? 'active' : '' }}" 
-               href="{{ route('books.index') }}">Buku</a>
-            <a class="nav-link {{ request()->is('categories*') ? 'active' : '' }}" 
-               href="{{ route('categories.index') }}">Kategori</a>
+            <a class="nav-link {{ request()->is('/') ? 'active' : '' }}"
+               href="{{ url('/') }}">Home</a>
+            <a class="nav-link {{ request()->is('books*') ? 'active' : '' }}"
+               href="{{ route('books.index') }}">Data Buku</a>
+            <a class="nav-link {{ request()->is('categories*') ? 'active' : '' }}"
+               href="{{ route('categories.index') }}">Data Kategori</a>
         </div>
     </div>
 </nav>
@@ -26,6 +28,3 @@
 
 </body>
 </html>
-```
-
-
